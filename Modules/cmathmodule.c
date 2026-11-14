@@ -961,12 +961,18 @@ cmath_log_impl(PyObject *module, Py_complex x, PyObject *y_obj)
     errno = 0;
     x = c_log(x);
     if (y_obj != NULL) {
+        /* c_log() clears errno on success, so keep the error from log(z). */
+        int log_errno = errno;
+
         y = PyComplex_AsCComplex(y_obj);
         if (PyErr_Occurred()) {
             return NULL;
         }
         y = c_log(y);
         x = _Py_c_quot(x, y);
+        if (errno == 0) {
+            errno = log_errno;
+        }
     }
     if (errno != 0)
         return math_error();

@@ -1,0 +1,3 @@
+:func:`cmath.log` now raises :exc:`ValueError` for a zero argument when a
+*base* is given, like it does without one, instead of returning a value such as
+``(-inf+nanj)``.

@@ -406,6 +406,17 @@ class CMathTests(ComplexesAreIdenticalMixin, unittest.TestCase):
                 _testcapi.set_errno(0)
         self.check_polar(polar_with_errno_set)
 
+    def test_log_base_domain_error(self):
+        # log(0, base) raises like log(0), whatever the base.
+        for z in [0, 0.0, -0.0, 0j, complex(-0.0, -0.0)]:
+            for base in [2, 10, 0.5, -1, 1j, 2+3j, 1e-320, INF, NAN]:
+                with self.subTest(z=z, base=base):
+                    self.assertRaises(ValueError, cmath.log, z, base)
+        for base in [0, 0j, 1]:
+            with self.subTest(base=base):
+                self.assertRaises(ValueError, cmath.log, 2, base)
+        self.assertRaises(TypeError, cmath.log, 0, 'spam')
+
     @unittest.skipIf(sys.platform.startswith("sunos"),
                      "skipping, see gh-138573")
     def test_phase(self):
